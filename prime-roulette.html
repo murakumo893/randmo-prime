@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>運命の一本</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0a0a0f; --surface:#13131a; --surface2:#1c1c28;
+    --border:rgba(255,255,255,0.07); --accent:#00d4ff; --accent2:#7b61ff;
+    --text:#e8e8f0; --muted:#6b6b80; --amazon:#ff9900;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Serif JP',serif;min-height:100dvh}
+  body::before{content:'';position:fixed;inset:0;
+    background:radial-gradient(ellipse at 70% 10%,rgba(0,212,255,.05) 0%,transparent 55%),
+               radial-gradient(ellipse at 10% 90%,rgba(123,97,255,.06) 0%,transparent 55%);
+    pointer-events:none;z-index:0}
+  .wrap{position:relative;z-index:1;max-width:420px;margin:0 auto;padding:0 20px 48px;display:flex;flex-direction:column;gap:16px}
+  header{padding:56px 0 8px;text-align:center}
+  .eyebrow{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.4em;color:var(--accent);text-transform:uppercase;margin-bottom:10px}
+  h1{font-size:30px;font-weight:300;letter-spacing:.04em;background:linear-gradient(135deg,#e8e8f0 40%,rgba(0,212,255,.6));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .tagline{margin-top:8px;font-size:12px;color:var(--muted);font-weight:300;letter-spacing:.03em}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:24px;overflow:hidden}
+  .poster-wrap{position:relative;aspect-ratio:2/3;max-height:400px;background:var(--surface2);display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .poster-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+  .poster-grad{position:absolute;bottom:0;left:0;right:0;height:60%;background:linear-gradient(to top,rgba(10,10,15,.95),transparent)}
+  .placeholder{display:flex;flex-direction:column;align-items:center;gap:12px;color:var(--muted)}
+  .dice{font-size:52px;animation:float 3s ease-in-out infinite}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .placeholder p{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.15em;text-transform:uppercase}
+  .genre-tag{position:absolute;top:12px;right:12px;background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.3);color:var(--accent);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;padding:5px 10px;border-radius:20px;backdrop-filter:blur(8px)}
+  .info{padding:18px 18px 20px}
+  .movie-title{font-size:18px;font-weight:700;line-height:1.3;margin-bottom:6px}
+  .meta{display:flex;gap:12px;align-items:center;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:10px}
+  .star{color:#ffd700}
+  .overview{font-size:12px;line-height:1.75;color:rgba(232,232,240,.6);font-weight:300;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .spinner-overlay{position:absolute;inset:0;background:rgba(10,10,15,.8);backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;opacity:0;pointer-events:none;transition:opacity .25s}
+  .spinner-overlay.on{opacity:1;pointer-events:all}
+  .spin{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .spin-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--muted)}
+  .btn-fate{width:100%;padding:18px;border:none;border-radius:18px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-family:'Noto Serif JP',serif;font-size:16px;font-weight:700;letter-spacing:.08em;cursor:pointer;transition:transform .15s,opacity .15s;box-shadow:0 0 28px rgba(0,212,255,.2),0 4px 20px rgba(0,0,0,.4)}
+  .btn-fate:active{transform:scale(.97)}
+  .btn-fate:disabled{opacity:.4;cursor:not-allowed;transform:none}
+  .btn-amazon{width:100%;padding:16px;border:1px solid rgba(255,153,0,.4);border-radius:18px;background:rgba(255,153,0,.08);color:var(--amazon);font-family:'Noto Serif JP',serif;font-size:15px;font-weight:700;letter-spacing:.05em;cursor:pointer;transition:background .15s,transform .15s}
+  .btn-amazon:active{background:rgba(255,153,0,.15);transform:scale(.97)}
+  .btn-reroll{width:100%;padding:13px;border:1px solid var(--border);border-radius:18px;background:transparent;color:var(--muted);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.1em;cursor:pointer;transition:background .15s}
+  .btn-reroll:active{background:var(--surface)}
+  .err{background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.2);border-radius:12px;padding:12px 16px;font-size:11px;color:#ff4d6d;font-family:'Space Mono',monospace;letter-spacing:.05em;text-align:center}
+  footer{text-align:center;padding-top:4px;font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);opacity:.35;letter-spacing:.12em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Prime Roulette</p>
+    <h1>運命の一本</h1>
+    <p class="tagline">逃げられない。ただ観るだけ。</p>
+  </header>
+
+  <div class="card">
+    <div class="poster-wrap" id="posterWrap">
+      <div class="placeholder" id="placeholder">
+        <span class="dice">🎲</span>
+        <p>Roll the dice</p>
+      </div>
+      <img id="posterImg" style="display:none" alt="">
+      <div class="poster-grad" id="posterGrad" style="display:none"></div>
+      <span class="genre-tag" id="genreTag" style="display:none"></span>
+      <div class="spinner-overlay" id="spinner">
+        <div class="spin"></div>
+        <p class="spin-label">Fate deciding...</p>
+      </div>
+    </div>
+    <div class="info" id="info" style="display:none">
+      <h2 class="movie-title" id="titleEl"></h2>
+      <div class="meta">
+        <span class="star" id="ratingEl"></span>
+        <span id="yearEl"></span>
+        <span id="runtimeEl"></span>
+      </div>
+      <p class="overview" id="overviewEl"></p>
+    </div>
+  </div>
+
+  <div id="errEl" style="display:none" class="err"></div>
+  <button class="btn-fate" id="btnFate">🎲 &nbsp;運命を決める</button>
+  <button class="btn-amazon" id="btnAmazon" style="display:none">▶ &nbsp;Amazonで今すぐ観る</button>
+  <button class="btn-reroll" id="btnReroll" style="display:none">もう一度引く</button>
+
+  <footer>Prime Roulette · No Escape</footer>
+</div>
+
+<script>
+const API_KEY = '1a0b4b11600b59107f3ec4a1e057f0cc';
+const IMG = 'https://image.tmdb.org/t/p/w500';
+let current = null;
+let pool = []; // キャッシュ済みの映画プール
+
+document.getElementById('btnFate').addEventListener('click', roll);
+document.getElementById('btnReroll').addEventListener('click', roll);
+document.getElementById('btnAmazon').addEventListener('click', openAmazon);
+
+async function roll() {
+  showLoading(true);
+  hideMovie();
+  hideErr();
+
+  try {
+    // プールが少なくなったら補充
+    if (pool.length < 3) await refillPool();
+    if (pool.length === 0) throw new Error('映画を取得できませんでした');
+
+    const movie = pool.splice(Math.floor(Math.random() * pool.length), 1)[0];
+    current = movie;
+    renderMovie(movie);
+  } catch(e) {
+    showErr(e.message);
+  } finally {
+    showLoading(false);
+  }
+}
+
+async function refillPool() {
+  // ランダムなページ(1-100)からプライム見放題映画を取得
+  const page = Math.floor(Math.random() * 100) + 1;
+  const url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=ja-JP&watch_region=JP&with_watch_providers=9&watch_monetization_types=flatrate&sort_by=popularity.desc&vote_count.gte=20&page=${page}`;
+  const r = await fetch(url);
+  const data = await r.json();
+  if (!data.results?.length) throw new Error('取得失敗 (p.' + page + ')');
+  pool.push(...data.results);
+}
+
+function renderMovie(m) {
+  document.getElementById('placeholder').style.display = 'none';
+
+  const poster = m.poster_path || m.backdrop_path;
+  if (poster) {
+    const img = document.getElementById('posterImg');
+    img.src = IMG + poster;
+    img.style.display = 'block';
+    document.getElementById('posterGrad').style.display = 'block';
+  }
+
+  // ジャンルIDを日本語名に変換
+  const genreMap = {28:'アクション',12:'アドベンチャー',16:'アニメ',35:'コメディ',80:'犯罪',99:'ドキュメンタリー',18:'ドラマ',10751:'ファミリー',14:'ファンタジー',36:'歴史',27:'ホラー',10402:'音楽',9648:'ミステリー',10749:'ロマンス',878:'SF',10770:'TV映画',53:'スリラー',10752:'戦争',37:'西部劇'};
+  const genreName = m.genre_ids?.[0] ? (genreMap[m.genre_ids[0]] || 'ドラマ') : 'ドラマ';
+
+  document.getElementById('genreTag').textContent = genreName;
+  document.getElementById('genreTag').style.display = 'block';
+  document.getElementById('titleEl').textContent = m.title || m.original_title;
+  document.getElementById('ratingEl').textContent = `★ ${(m.vote_average||0).toFixed(1)}`;
+  document.getElementById('yearEl').textContent = (m.release_date||'').slice(0,4);
+  document.getElementById('overviewEl').textContent = m.overview || '(あらすじなし)';
+  document.getElementById('info').style.display = 'block';
+  document.getElementById('btnAmazon').style.display = 'block';
+  document.getElementById('btnReroll').style.display = 'block';
+}
+
+function openAmazon() {
+  if (!current) return;
+  const q = encodeURIComponent(current.title || current.original_title);
+  // プライム見放題フィルター付きで検索
+  window.open(`https://www.amazon.co.jp/s?k=${q}&i=instant-video&rh=p_85%3A2761625051`, '_blank');
+}
+
+function showLoading(on) {
+  document.getElementById('spinner').classList.toggle('on', on);
+  document.getElementById('btnFate').disabled = on;
+}
+function hideMovie() {
+  document.getElementById('info').style.display = 'none';
+  document.getElementById('posterImg').style.display = 'none';
+  document.getElementById('posterGrad').style.display = 'none';
+  document.getElementById('genreTag').style.display = 'none';
+  document.getElementById('placeholder').style.display = 'flex';
+  document.getElementById('btnAmazon').style.display = 'none';
+  document.getElementById('btnReroll').style.display = 'none';
+}
+function showErr(msg) {
+  const el = document.getElementById('errEl');
+  el.textContent = '⚠ ' + msg;
+  el.style.display = 'block';
+}
+function hideErr() {
+  document.getElementById('errEl').style.display = 'none';
+}
+</script>
+</body>
+</html>
