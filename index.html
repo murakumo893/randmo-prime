@@ -104,7 +104,7 @@ document.getElementById('btnReroll').addEventListener('click', roll);
 document.getElementById('btnAmazon').addEventListener('click', openAmazon);
 document.getElementById('movieCard').addEventListener('click', openAmazon);
 document.getElementById('movieCard').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' || e.key === ' ') {
+  if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar' || e.code === 'Space') {
     e.preventDefault();
     openAmazon();
   }
