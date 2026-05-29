@@ -60,7 +60,7 @@
     <p class="tagline">逃げられない。ただ観るだけ。</p>
   </header>
 
-  <div class="card" id="movieCard">
+  <div class="card" id="movieCard" role="button" tabindex="0" aria-label="映画をAmazonで観る">
     <div class="poster-wrap" id="posterWrap">
       <div class="placeholder" id="placeholder">
         <span class="dice">🎲</span>
@@ -103,6 +103,12 @@ document.getElementById('btnFate').addEventListener('click', roll);
 document.getElementById('btnReroll').addEventListener('click', roll);
 document.getElementById('btnAmazon').addEventListener('click', openAmazon);
 document.getElementById('movieCard').addEventListener('click', openAmazon);
+document.getElementById('movieCard').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    openAmazon();
+  }
+});
 
 async function roll() {
   showLoading(true);
