@@ -60,7 +60,7 @@
     <p class="tagline">逃げられない。ただ観るだけ。</p>
   </header>
 
-  <div class="card">
+  <div class="card" id="movieCard">
     <div class="poster-wrap" id="posterWrap">
       <div class="placeholder" id="placeholder">
         <span class="dice">🎲</span>
@@ -102,6 +102,7 @@ let pool = []; // キャッシュ済みの映画プール
 document.getElementById('btnFate').addEventListener('click', roll);
 document.getElementById('btnReroll').addEventListener('click', roll);
 document.getElementById('btnAmazon').addEventListener('click', openAmazon);
+document.getElementById('movieCard').addEventListener('click', openAmazon);
 
 async function roll() {
   showLoading(true);
